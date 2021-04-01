@@ -12,6 +12,15 @@ public class CustomerModel {
         this.id = id;
     }
 
+    public CustomerModel(String name, int age, boolean isActive) {
+        this.name = name;
+        this.age = age;
+        this.isActive = isActive;
+    }
+
+    public CustomerModel() {
+    }
+
     public String getName() {
         return name;
     }

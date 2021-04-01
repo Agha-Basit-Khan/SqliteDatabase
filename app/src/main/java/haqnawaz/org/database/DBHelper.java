@@ -2,10 +2,14 @@ package haqnawaz.org.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
     public static final String CUSTOMER_NAME = "CustomerName";
@@ -15,7 +19,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String CUST_TABLE = "CustTable";
 
     public DBHelper(@Nullable Context context) {
-        super(context, "MyDB.db", null, 1);
+        super(context, "MyDB0.db", null, 1);
     }
 
     @Override
@@ -42,5 +46,33 @@ public class DBHelper extends SQLiteOpenHelper {
         long insert = db.insert(CUST_TABLE, null, cv);
         if (insert == -1) { return false; }
         else{return true;}
+    }
+
+    public List<CustomerModel> getAllRecords(){
+        List<CustomerModel> myList = new ArrayList<>();
+        String query = "SELECT * FROM " + CUST_TABLE;
+        SQLiteDatabase DB = this.getReadableDatabase();
+        Cursor cursor = DB.rawQuery(query,null);
+        if(cursor.moveToFirst()){
+            do {
+                int id = cursor.getInt(0);
+                String custName = cursor.getString(1);
+                int custAge = cursor.getInt(2);
+                boolean isActive = cursor.getInt(3) == 1 ? true : false;
+
+                CustomerModel newCustModel = new CustomerModel(custName,custAge,isActive,id);
+                myList.add(newCustModel);
+            }
+            while (cursor.moveToNext());
+        }
+        cursor.close();
+        DB.close();
+        return myList;
+    }
+
+    public void deleteCustomer(int id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(CUST_TABLE, CUSTOMER_ID + "=?", new String[]{String.valueOf(id)});
+        db.close();
     }
 }
